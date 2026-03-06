@@ -1665,11 +1665,15 @@ async function nvdFetchPage(params, signal) {
   if (wait > 0) await new Promise(r => setTimeout(r, wait));
   _lastNvdCall = Date.now();
 
+  const start = new Date();
+  start.setDate(start.getDate() - 180);
+
   const p = new URLSearchParams({
     resultsPerPage: 200,
     startIndex: 0,
     sortBy: "pubDate",
     sortDir: "desc",
+    pubStartDate: start.toISOString(),
     ...params
   });
 
