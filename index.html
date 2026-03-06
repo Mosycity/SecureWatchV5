@@ -2233,6 +2233,7 @@ function updateStats(){
 
 /* ALERT BANNER */
 function checkAlertBanner(){
+
   const sel = vendors.filter(v => selectedVendors.has(v.id));
 
   let todayCVEs = [];
@@ -2240,31 +2241,32 @@ function checkAlertBanner(){
 
   sel.forEach(v=>{
     const cves = (vendorData[v.id] || []).filter(c => isToday(c.published));
-    if(cves.length){
-      todayCVEs = todayCVEs.concat(cves);
+    cves.forEach(c=>{
+      todayCVEs.push({...c, vendor:v.label});
       vendorNames.add(v.label);
-    }
+    });
   });
-
-  const kevToday = todayCVEs.filter(c=>kevSet.has(c.id));
 
   const banner=document.getElementById('alertBanner');
   const txt=document.getElementById('alertText');
 
   if(todayCVEs.length>0){
 
-    const vendorList = [...vendorNames].join(', ');
+    const latest = todayCVEs[0];
+    const vendorList=[...vendorNames].join(', ');
 
     txt.innerHTML =
-    `🔔 <strong>${todayCVEs.length} new CVE${todayCVEs.length>1?'s':''} published TODAY</strong> for <strong>${vendorList}</strong>` +
-    (kevToday.length>0
-      ? ` — <strong style="color:var(--crit)">${kevToday.length} actively exploited (CISA KEV)!</strong>`
-      : '');
+    `🔔 <strong>New CVE Today</strong> — 
+    <span style="color:var(--accent);font-family:monospace">
+    ${latest.id}
+    </span> detected for <strong>${vendorList}</strong>`;
 
     banner.classList.add('show');
 
   } else {
+
     banner.classList.remove('show');
+
   }
 }
 
